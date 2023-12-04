@@ -1,37 +1,25 @@
 with open("02.txt") as f:
     lines = [a.strip() for a in f.readlines()]
 
-c_max = {'red': 12, 'green': 13, 'blue': 14}
+color_max = {'red': 12, 'green': 13, 'blue': 14}
 s = 0
-for line in lines:
-    gid, game = line[5:].split(':')
-    gid = int(gid)
-    game = game.replace(',', ';').split(';')
+for idx, line in enumerate(lines):
+    game = [(int(g.split()[0]), g.split()[1]) for g in line.split(':')[1].replace(',', ';').split(';')]  # list of pairs
+    s += 0 if len([1 for value, color in game if value > color_max.get(color)]) > 0 else idx + 1
 
-    ok = True
-    for turn in game:
-        v, c = turn.strip().split(' ')
-        if int(v) > c_max.get(c.strip()):
-            ok = False
-            break
-    if ok:
-        s += int(gid)
 print(s)
 assert s == 2164
 
-s = 0
-for line in lines:
-    gid, game = line[5:].split(':')
-    gid = int(gid)
-    game = game.split(';')
-    c_min = {'red': 0, 'green': 0, 'blue': 0}
-    for turns in game:
-        turn = turns.split(',')
-        for t in turn:
-            _, v, c = t.split(' ')
-            if int(v) > c_min.get(c.strip()):
-                c_min[c.strip()] = int(v)
 
-    s += c_min.get('red') * c_min.get('green') * c_min.get('blue')
+s = 0
+for idx, line in enumerate(lines):
+    color_min = {'red': 0, 'green': 0, 'blue': 0}
+
+    game = [(int(g.split()[0]), g.split()[1]) for g in line.split(':')[1].replace(',', ';').split(';')]  # list of pairs
+    for value, color in game:
+        color_min[color] = max(value, color_min[color])
+
+    s += color_min['red'] * color_min['green'] * color_min['blue']
+
 print(s)
 assert s == 69929
